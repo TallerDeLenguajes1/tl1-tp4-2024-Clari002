@@ -18,82 +18,13 @@ struct Nodo{
 
 typedef struct Nodo Nodo;
 
-
-//inicializar lista vacia
-Nodo * crearListaVacia()
-{
-    return NULL;
-}
-
-//crear nodo
-Nodo * crearNodo(Tarea tarea)
-{
-    Nodo * nuevoNodo =(Nodo *)malloc(sizeof(Nodo));
-    nuevoNodo->T=tarea;
-    nuevoNodo->Siguiente=NULL;
-    return nuevoNodo;
-}
-
-void insertarTareaALista(Nodo ** start, Nodo * nuevoNodo)
-{
-     nuevoNodo->Siguiente= *start;
-    *start = nuevoNodo;
-}
-
-void mostrarTarea(Nodo * start)
-{
-    printf("\n-------------TAREA ID%d-------------", start->T.TareaID);
-    printf("\nDescripcion: ");
-    puts(start->T.Descripcion);
-    printf("Duracion: %d", start->T.Duracion);
-}
-
-void mostrarLista(Nodo * start)
-{
-    Nodo * aux = start;
-    while (aux != NULL)
-    {
-        mostrarTarea(aux);
-        aux = aux->Siguiente;
-    }
-}
-
-void buscarTareaPorID(Nodo * tareasPendientes, Nodo * tareasRealizadas, int IDBuscado)
-{
-    Nodo * auxTp = tareasPendientes;
-    int encontrado = 0;
-    while (auxTp!=NULL)
-    {
-        if (auxTp->T.TareaID==IDBuscado)
-        {
-            printf("\nLa tarea ID=%d corresponde a TAREAS PENDIENTES", IDBuscado);
-            mostrarTarea(auxTp);
-            encontrado=1;
-            break;
-        }
-        auxTp=auxTp->Siguiente;
-    }
-    if (!encontrado)
-    {
-        auxTp=tareasRealizadas;
-        while (auxTp!=NULL)
-        {
-            if (auxTp->T.TareaID==IDBuscado)
-            {
-                printf("\nLa tarea ID=%d corresponde a TAREAS REALIZADAS", IDBuscado);
-                mostrarTarea(auxTp);
-                encontrado=1;
-                break;
-            }
-            auxTp=auxTp->Siguiente;       
-        }   
-    }
-    if (!encontrado)
-    {
-        printf("\nEl ID= %d no fue encontrado", IDBuscado);
-    }   
-}
-
+Nodo * crearListaVacia();
+Nodo * crearNodo(Tarea tarea);
+void insertarTareaALista(Nodo ** start, Nodo * nuevoNodo);
+void mostrarTarea(Nodo * start);
+void mostrarLista(Nodo * start);
+void buscarTareaPorID(Nodo * tareasPendientes, Nodo * tareasRealizadas, int IDBuscado);
+void liberarMemoria(Nodo * start);
 
 int main()
 {
@@ -101,7 +32,7 @@ int main()
     Nodo * TareasRealizadas = crearListaVacia();
     int respuesta=0, i=0, duracion;
     char *Buff;//variable aux
-    Buff=(char *)malloc(10000*sizeof(char));
+    Buff=(char *)malloc(100*sizeof(char));
 
     printf("-------------CARGAR TAREA/S A LISTA PENDIENTE-------------");
     printf("\nCargar una tarea Si(1) No(0): ");
@@ -127,7 +58,7 @@ int main()
             
             sscanf(Buff, "%d", &tarea.Duracion);
             i++;
-          insertarTareaALista(&TareasPendiendes, crearNodo(tarea));
+            insertarTareaALista(&TareasPendiendes, crearNodo(tarea));
             printf("\n-------------CARGAR TAREA/S A LISTA PENDIENTE-------------");
             printf("\nCargar una tarea Si(1) No(0): ");
             scanf("%d", &respuesta);
@@ -211,5 +142,95 @@ Nodo * nodoAuxiliar;
         }
     } while (resp != 0);
     
+    liberarMemoria(TareasPendiendes);
+    liberarMemoria(TareasRealizadas);
+    free(Buff);
     return 0;
+}
+
+//inicializar lista vacia
+Nodo * crearListaVacia()
+{
+    return NULL;
+}
+
+//crear nodo
+Nodo * crearNodo(Tarea tarea)
+{
+    Nodo * nuevoNodo =(Nodo *)malloc(sizeof(Nodo));
+    nuevoNodo->T=tarea;
+    nuevoNodo->Siguiente=NULL;
+    return nuevoNodo;
+}
+
+void insertarTareaALista(Nodo ** start, Nodo * nuevoNodo)
+{
+     nuevoNodo->Siguiente= *start;
+    *start = nuevoNodo;
+}
+
+void mostrarTarea(Nodo * start)
+{
+    printf("\n-------------TAREA ID%d-------------", start->T.TareaID);
+    printf("\nDescripcion: ");
+    puts(start->T.Descripcion);
+    printf("Duracion: %d", start->T.Duracion);
+}
+
+void mostrarLista(Nodo * start)
+{
+    Nodo * aux = start;
+    while (aux != NULL)
+    {
+        mostrarTarea(aux);
+        aux = aux->Siguiente;
+    }
+}
+
+void buscarTareaPorID(Nodo * tareasPendientes, Nodo * tareasRealizadas, int IDBuscado)
+{
+    Nodo * auxTp = tareasPendientes;
+    int encontrado = 0;
+    while (auxTp!=NULL)
+    {
+        if (auxTp->T.TareaID==IDBuscado)
+        {
+            printf("\nLa tarea ID=%d corresponde a TAREAS PENDIENTES", IDBuscado);
+            mostrarTarea(auxTp);
+            encontrado=1;
+            break;
+        }
+        auxTp=auxTp->Siguiente;
+    }
+    if (!encontrado)
+    {
+        auxTp=tareasRealizadas;
+        while (auxTp!=NULL)
+        {
+            if (auxTp->T.TareaID==IDBuscado)
+            {
+                printf("\nLa tarea ID=%d corresponde a TAREAS REALIZADAS", IDBuscado);
+                mostrarTarea(auxTp);
+                encontrado=1;
+                break;
+            }
+            auxTp=auxTp->Siguiente;       
+        }   
+    }
+    if (!encontrado)
+    {
+        printf("\nEl ID= %d no fue encontrado", IDBuscado);
+    }   
+}
+
+void liberarMemoria(Nodo * start)
+{
+    Nodo * aux;
+    while (start!=NULL)
+    {
+        aux = start;
+        start=start->Siguiente;
+        free(aux->T.Descripcion);
+        free(aux);
+    }
 }
